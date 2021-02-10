@@ -47,9 +47,15 @@ endif()
 # Add this project's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-# Download and extract the CEF binary distribution (executes DownloadCEF.cmake).
-include(DownloadCEF)
-DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
+set(CEF_ROOT_CUSTOM "" CACHE PATH "Use custom CEF distrib from path")
+
+if (NOT CEF_ROOT_CUSTOM)
+  # Download and extract the CEF binary distribution (executes DownloadCEF.cmake).
+  include(DownloadCEF)
+  DownloadCEF("${CEF_PLATFORM}" "${CEF_VERSION}" "${CMAKE_SOURCE_DIR}/third_party/cef")
+else()
+  set (CEF_ROOT ${CEF_ROOT_CUSTOM} CACHE INTERNAL "CEF_ROOT")
+endif()
 
 # Add the CEF binary distribution's cmake/ directory to the module path.
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CEF_ROOT}/cmake")
@@ -123,10 +129,10 @@ endif()
 add_subdirectory(${CEF_LIBCEF_DLL_WRAPPER_PATH} libcef_dll_wrapper)
 
 # Include CEF's test application targets (executes <target>/CMakeLists.txt).
-add_subdirectory(${CEF_ROOT}/tests/cefclient)
-add_subdirectory(${CEF_ROOT}/tests/cefsimple)
-add_subdirectory(${CEF_ROOT}/tests/gtest)
-add_subdirectory(${CEF_ROOT}/tests/ceftests)
+add_subdirectory(${CEF_ROOT}/tests/cefclient tests/cefclient)
+add_subdirectory(${CEF_ROOT}/tests/cefsimple tests/cefsimple)
+add_subdirectory(${CEF_ROOT}/tests/gtest tests/gtest)
+add_subdirectory(${CEF_ROOT}/tests/ceftests tests/ceftests)
 
 # Allow includes relative to the current source directory.
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
